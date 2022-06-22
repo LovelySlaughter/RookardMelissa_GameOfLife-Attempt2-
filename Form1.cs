@@ -19,6 +19,9 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         // Boundry type bool
         bool boundry = false;
 
+        // Neighbor Count bool
+        bool neighborcountOnOff = true;
+
         // Width
         static int wide = 50;
 
@@ -31,7 +34,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         bool[,] scratch = new bool[wide, tall];
 
         // My Seed
-        int seeder = 25;
+        int seeder = new Random().Next();
 
         // Drawing colors
         Color gridColor = Color.Green;
@@ -47,12 +50,17 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         // Generation count
         int generations = 0;
 
-        // Neighbor count
-        int numofneighbors = 0;
-
         public Form1()
         {
             InitializeComponent();
+
+            // Get Recently Saved Settings
+            graphicsPanel1.BackColor = Properties.Settings.Default.BackGroundColor;
+            cellColor = Properties.Settings.Default.CellColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            wide = Properties.Settings.Default.UniverseWide;
+            tall = Properties.Settings.Default.UniverseTall;
+            graphicsPanel1.Invalidate();
 
             // Setup the timer
             timer.Interval = 100; // milliseconds
@@ -108,6 +116,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
                     }
                 }
             }
+
             bool[,] swapper = universe;
             universe = scratch;
             scratch = swapper;
@@ -115,6 +124,9 @@ namespace RookardMelissa_GameOfLife_Attempt2_
             scratch = emptyscratch;
             // Increment generation count
             generations++;
+
+           
+            
 
             // Update status strip generations
             toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
@@ -146,6 +158,11 @@ namespace RookardMelissa_GameOfLife_Attempt2_
             // A Brush for the hud (color)
             Brush hbrush = new SolidBrush(hudcolor);
 
+            Font displaycount = new Font("Arial", 12);
+            StringFormat countformat = new StringFormat();
+            countformat.Alignment = StringAlignment.Center;
+            countformat.LineAlignment = StringAlignment.Center;
+
             // Iterate through the universe in the y, top to bottom
             for (int y = 0; y < universe.GetLength(1); y++)
             {
@@ -166,8 +183,12 @@ namespace RookardMelissa_GameOfLife_Attempt2_
 
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
-
-
+                    // Display Neightbor Count
+                    if (neighborcountOnOff == true)
+                    {
+                        BoundryCheck(x, y, out int numOfNeighbors);
+                        e.Graphics.DrawString(numOfNeighbors.ToString(), displaycount, Brushes.Black, cellRect, countformat);
+                    }
                 }
             }
 
@@ -194,10 +215,10 @@ namespace RookardMelissa_GameOfLife_Attempt2_
 
                 e.Graphics.DrawString(display.ToString(), font, hbrush, hud);
             }
-
             // Cleaning up pens and brushes
             gridPen.Dispose();
             cellBrush.Dispose();
+            hbrush.Dispose();
         }
 
         private void graphicsPanel1_MouseClick(object sender, MouseEventArgs e)
@@ -459,9 +480,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         // Button to randomize with a random seed
         private void randomSeedToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
-            Random randseed = new Random();
-
+            Random randseed = new Random(seeder);
             for (int y = 0; y < universe.GetLength(1); y++)
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
@@ -863,48 +882,80 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         {
             graphicsPanel1.BackColor = Color.White;
             graphicsPanel1.Invalidate();
+            if(gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
 
         private void blackToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             graphicsPanel1.BackColor = Color.Black;
             graphicsPanel1.Invalidate();
+            if (gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
 
         private void greenToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             graphicsPanel1.BackColor = Color.Green;
             graphicsPanel1.Invalidate();
+            if (gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
 
         private void blueToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             graphicsPanel1.BackColor = Color.Blue;
             graphicsPanel1.Invalidate();
+            if (gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
 
         private void redToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             graphicsPanel1.BackColor = Color.Red;
             graphicsPanel1.Invalidate();
+            if (gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
 
         private void purpleToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             graphicsPanel1.BackColor = Color.Purple;
             graphicsPanel1.Invalidate();
+            if (gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
 
         private void orangeToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             graphicsPanel1.BackColor = Color.Orange;
             graphicsPanel1.Invalidate();
+            if (gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
 
         private void yellowToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             graphicsPanel1.BackColor = Color.Yellow;
             graphicsPanel1.Invalidate();
+            if (gridOffToolStripMenuItem.Checked == true)
+            {
+                gridColor = graphicsPanel1.BackColor;
+            }
         }
         // end of background color options
         private void customSeedToolStripMenuItem_Click_1(object sender, EventArgs e)
@@ -973,6 +1024,83 @@ namespace RookardMelissa_GameOfLife_Attempt2_
                 scratch = new bool[wide, tall];
             }
             graphicsPanel1.Invalidate();
+        }
+
+        private void gridOnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            gridOffToolStripMenuItem.Checked = false;
+            gridOnToolStripMenuItem.Checked = true;
+            if (graphicsPanel1.BackColor == Color.White || graphicsPanel1.BackColor == Color.Yellow)
+            {
+                gridColor = Color.Black;
+            }
+            else
+            {
+                gridColor = Color.White;
+            }
+            graphicsPanel1.Invalidate();
+        }
+
+        private void gridOffToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            gridOffToolStripMenuItem.Checked = true;
+            gridOnToolStripMenuItem.Checked = false;
+            gridColor = graphicsPanel1.BackColor;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void displayOnToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            neighborcountOnOff = true;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void displayOffToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            neighborcountOnOff = false;
+            graphicsPanel1.Invalidate();
+        }
+
+        private void hUDSettingsToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void acornToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void resetToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            //Set up Property
+            graphicsPanel1.BackColor = Color.White;
+            gridColor = Color.Black;
+            cellColor = Color.MediumPurple;
+            timer.Interval = 100;
+            wide = 50;
+            tall = 50;
+        }
+
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            graphicsPanel1.BackColor = Properties.Settings.Default.BackGroundColor;
+            cellColor = Properties.Settings.Default.CellColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            wide = Properties.Settings.Default.UniverseWide;
+            tall = Properties.Settings.Default.UniverseTall;
+
+        }
+
+        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Save the Settings
+            Properties.Settings.Default.BackGroundColor = graphicsPanel1.BackColor;
+            Properties.Settings.Default.GridColor = gridColor;
+            Properties.Settings.Default.CellColor = cellColor;
+            Properties.Settings.Default.UniverseWide = wide;
+            Properties.Settings.Default.UniverseTall = tall;
+            Properties.Settings.Default.Save();
         }
     }
 }
