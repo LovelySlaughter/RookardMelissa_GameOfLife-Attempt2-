@@ -39,9 +39,9 @@
             // button1
             // 
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(175, 369);
+            this.button1.Location = new System.Drawing.Point(110, 287);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(176, 46);
             this.button1.TabIndex = 0;
             this.button1.Text = "Confirm";
             this.button1.UseVisualStyleBackColor = true;
@@ -49,9 +49,9 @@
             // button2
             // 
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button2.Location = new System.Drawing.Point(410, 369);
+            this.button2.Location = new System.Drawing.Point(385, 286);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(203, 47);
             this.button2.TabIndex = 1;
             this.button2.Text = "Cancel";
             this.button2.UseVisualStyleBackColor = true;

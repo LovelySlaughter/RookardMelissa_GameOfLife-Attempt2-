@@ -23,10 +23,11 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         bool neighborcountOnOff = true;
 
         // Width
-        static int wide = 50;
+        static int wide = Properties.Settings.Default.UniverseWide;
 
         // Height
-        static int tall = 50;
+        static int tall = Properties.Settings.Default.UniverseTall;
+
         // The universe array
         bool[,] universe = new bool[wide, tall];
 
@@ -37,8 +38,8 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         int seeder = new Random().Next();
 
         // Drawing colors
-        Color gridColor = Color.Green;
-        Color cellColor = Color.MediumPurple;
+        Color gridColor = Properties.Settings.Default.GridColor;
+        Color cellColor = Properties.Settings.Default.CellColor;
         Color hudcolor = Color.Black;
 
         // Font
@@ -55,18 +56,14 @@ namespace RookardMelissa_GameOfLife_Attempt2_
             InitializeComponent();
 
             // Get Recently Saved Settings
-            graphicsPanel1.BackColor = Properties.Settings.Default.BackGroundColor;
-            cellColor = Properties.Settings.Default.CellColor;
-            gridColor = Properties.Settings.Default.GridColor;
-            wide = Properties.Settings.Default.UniverseWide;
-            tall = Properties.Settings.Default.UniverseTall;
-            graphicsPanel1.Invalidate();
+            graphicsPanel1.BackColor = Properties.Settings.Default.BackGroundColor;            
 
             // Setup the timer
-            timer.Interval = 100; // milliseconds
+            timer.Interval = Properties.Settings.Default.TimerInterval; // milliseconds
             timer.Tick += Timer_Tick;
             timer.Enabled = false; // start timer running
         }
+        // Method to swap from Finite to Toroidal
         private void BoundryCheck(int x, int y, out int counter)
         {
             if (boundry == false)
@@ -82,7 +79,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         // Calculate the next generation of cells
         private void NextGeneration()
         {
-            int living = 0;
+            int living = 0; //Int for living cells
             for (int y = 0; y < universe.GetLength(1); y++)
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
@@ -180,20 +177,22 @@ namespace RookardMelissa_GameOfLife_Attempt2_
                     {
                         e.Graphics.FillRectangle(cellBrush, cellRect);
                     }
-
                     // Outline the cell with a pen
                     e.Graphics.DrawRectangle(gridPen, cellRect.X, cellRect.Y, cellRect.Width, cellRect.Height);
                     // Display Neightbor Count
                     if (neighborcountOnOff == true)
                     {
                         BoundryCheck(x, y, out int numOfNeighbors);
-                        e.Graphics.DrawString(numOfNeighbors.ToString(), displaycount, Brushes.Black, cellRect, countformat);
+                        if (numOfNeighbors !=0)
+                        {
+                            e.Graphics.DrawString(numOfNeighbors.ToString(), displaycount, Brushes.Black, cellRect, countformat);
+                        }
                     }
                 }
             }
 
             // HUD
-            int living = 0;
+            int living = 0; //Int for living cells
             for (int y = 0; y < universe.GetLength(1); y++)
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
@@ -204,13 +203,22 @@ namespace RookardMelissa_GameOfLife_Attempt2_
                     }
                 }
             }
+            String boundrytype;
+            if (boundry == false)
+            {
+                boundrytype = " Finite";
+            }
+            else
+            {
+                boundrytype = "Toroidal";
+            }
             if (hudOnOrOff == true)
             {
                 RectangleF hud = RectangleF.Empty;
-                string display = "Generation = " + generations + " Living Cells = " + living + " Universe Size = " + wide + ", " + tall;
+                string display = "Generation = " + generations + " Living Cells = " + living + " Universe Size = " + wide + ", " + tall + " Boundry Type = " + boundrytype;
                 hud.Width = graphicsPanel1.Width;
                 hud.Height = graphicsPanel1.Height;
-                hud.X = graphicsPanel1.Width / 2;
+                hud.X = graphicsPanel1.Width / 2 - 25;
                 hud.Y = graphicsPanel1.Height - 20;
 
                 e.Graphics.DrawString(display.ToString(), font, hbrush, hud);
@@ -480,7 +488,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         // Button to randomize with a random seed
         private void randomSeedToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Random randseed = new Random(seeder);
+            Random randseed = new Random();
             for (int y = 0; y < universe.GetLength(1); y++)
             {
                 for (int x = 0; x < universe.GetLength(0); x++)
@@ -497,11 +505,6 @@ namespace RookardMelissa_GameOfLife_Attempt2_
                 }
             }
             graphicsPanel1.Invalidate();
-        }
-        // tool that allows user to input a custom seed for custom randomization
-        private void customSeedToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
         }
         // tool to save your setting and universe to a file
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -958,6 +961,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
             }
         }
         // end of background color options
+        // tool that allows user to input a custom seed for custom randomization
         private void customSeedToolStripMenuItem_Click_1(object sender, EventArgs e)
         {
             ModelDialouge randomseedgen = new ModelDialouge();
@@ -991,6 +995,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
             finiteToolStripMenuItem.CheckState = CheckState.Checked;
             toroidalToolStripMenuItem.CheckState = CheckState.Unchecked;
             boundry = false;
+            graphicsPanel1.Invalidate();
         }
 
         private void toroidalToolStripMenuItem_Click(object sender, EventArgs e)
@@ -998,6 +1003,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
             toroidalToolStripMenuItem.CheckState = CheckState.Checked;
             finiteToolStripMenuItem.CheckState = CheckState.Unchecked;
             boundry = true;
+            graphicsPanel1.Invalidate();
         }
 
         private void gameSpeedToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1068,28 +1074,49 @@ namespace RookardMelissa_GameOfLife_Attempt2_
 
         private void acornToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            
+            string demonoid = Properties.Resources.Demonoid;
+            for (int y = 0; y < demonoid.Length; y++)
+            {
+                for (int x = 0; x < demonoid.Length; x++)
+                {
+                    foreach (char item in demonoid)
+                    {
+                        if (demonoid == "*")
+                        {
+                            universe[x, y] = true;
+                        }
+                    }
+                }
+            }
         }
 
         private void resetToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             //Set up Property
-            graphicsPanel1.BackColor = Color.White;
-            gridColor = Color.Black;
-            cellColor = Color.MediumPurple;
-            timer.Interval = 100;
-            wide = 50;
-            tall = 50;
-        }
-
-        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+            Properties.Settings.Default.Reset();
             graphicsPanel1.BackColor = Properties.Settings.Default.BackGroundColor;
             cellColor = Properties.Settings.Default.CellColor;
             gridColor = Properties.Settings.Default.GridColor;
             wide = Properties.Settings.Default.UniverseWide;
             tall = Properties.Settings.Default.UniverseTall;
+            timer.Interval = Properties.Settings.Default.TimerInterval;
+            universe = new bool[wide, tall];
+            scratch = new bool[wide, tall];
+            graphicsPanel1.Invalidate();
+        }
 
+        private void reloadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Reload();
+            graphicsPanel1.BackColor = Properties.Settings.Default.BackGroundColor;
+            cellColor = Properties.Settings.Default.CellColor;
+            gridColor = Properties.Settings.Default.GridColor;
+            wide = Properties.Settings.Default.UniverseWide;
+            tall = Properties.Settings.Default.UniverseTall;
+            timer.Interval = Properties.Settings.Default.TimerInterval;
+            universe = new bool[wide, tall];
+            scratch = new bool[wide, tall];
+            graphicsPanel1.Invalidate();
         }
 
         private void Form1_FormClosed(object sender, FormClosedEventArgs e)
@@ -1101,6 +1128,24 @@ namespace RookardMelissa_GameOfLife_Attempt2_
             Properties.Settings.Default.UniverseWide = wide;
             Properties.Settings.Default.UniverseTall = tall;
             Properties.Settings.Default.Save();
+        }
+
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+            int living = 0;
+            timer.Enabled = false;
+            for (int y = 0; y < universe.GetLength(1); y++)
+            {
+                for (int x = 0; x < universe.GetLength(0); x++)
+                {
+                    universe[x, y] = false;
+                }
+            }
+            generations = 0;
+            toolStripStatusLabelGenerations.Text = "Generations = " + generations.ToString();
+            LivingCells.Text = "Living Cells = " + living.ToString();
+            seedStatusLabel1.Text = "Seed = " + seeder.ToString();
+            graphicsPanel1.Invalidate();
         }
     }
 }

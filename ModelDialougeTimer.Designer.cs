@@ -54,7 +54,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 1;
-            this.button2.Text = "Cancel";
+            this.button2.Text = "Decline";
             this.button2.UseVisualStyleBackColor = true;
             // 
             // numericUpDown1
@@ -81,7 +81,7 @@
             this.label2.Size = new System.Drawing.Size(69, 13);
             this.label2.TabIndex = 4;
             this.label2.Text = "Game Speed";
-            //
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
