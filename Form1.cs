@@ -40,7 +40,7 @@ namespace RookardMelissa_GameOfLife_Attempt2_
         // Drawing colors
         Color gridColor = Properties.Settings.Default.GridColor;
         Color cellColor = Properties.Settings.Default.CellColor;
-        Color hudcolor = Color.Black:
+        Color hudcolor = Color.Black;
 
         // Font
         Font font = new Font("Arial", 12f);
